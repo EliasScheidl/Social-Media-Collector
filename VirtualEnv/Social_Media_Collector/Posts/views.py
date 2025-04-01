@@ -8,7 +8,19 @@ def feed(request):
         return redirect('../../user/login')
     return HttpResponse("Hello World")
 
-def post(request):
+def upload(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
+    return HttpResponse("Hello World")
+
+def viewPost(request):
+    if request.session.get('user', None) is None:
+        return redirect('../../user/login')
+    return HttpResponse("Hello World")
+
+def manageReportedPost(request):
+    if request.session.get('user', None) is None:
+        return redirect('../../user/login')
+    if request.session.get('isAdmin', False) is False:
+        return HttpResponse("You're a woman")
     return HttpResponse("Hello World")

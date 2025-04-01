@@ -8,3 +8,18 @@ def like(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
     return HttpResponse("Hello World")
+
+def dislike(request):
+    if request.session.get('user', None) is None:
+        return redirect('../../user/login')
+    return HttpResponse("Hello World")
+
+def report(request):
+    if request.session.get('user', None) is None:
+        return redirect('../../user/login')
+    return HttpResponse("Hello World")
+
+def delete(request):
+    if request.session.get('user', None) is None:
+        return redirect('../../user/login')
+    return HttpResponse("Hello World")
