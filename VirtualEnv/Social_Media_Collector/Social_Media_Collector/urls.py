@@ -19,7 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('Posts.urls'), name='feed'),
     path('user/', include('Users.urls')),
-    path('', include('Posts.urls')),
+    path('posts/', include('Posts.urls')),
     path('interact/', include('Interactions.urls')),
 ]
