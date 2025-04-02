@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
 
 # Create your views here.
@@ -19,8 +19,6 @@ def viewPost(request):
     return HttpResponse("Hello World")
 
 def manageReportedPost(request):
-    if request.session.get('user', None) is None:
-        return redirect('../../user/login')
-    if request.session.get('isAdmin', False) is False:
-        return HttpResponse("You're a woman")
+    if request.session.get('isAdmin', "False") is "False":
+        return HttpResponseForbidden()
     return HttpResponse("Hello World")

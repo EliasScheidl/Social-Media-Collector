@@ -5,5 +5,5 @@ urlpatterns = [
     path('', views.feed, name='feed'),
     path('view/', views.viewPost, name='view'),
     path('upload/', views.upload, name='upload'),
-    path('reports/', views.upload, name='reports'),
+    path('reports/', views.manageReportedPost, name='reports'),
 ]

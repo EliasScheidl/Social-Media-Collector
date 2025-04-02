@@ -23,3 +23,6 @@ def delete(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
     return HttpResponse("Hello World")
+
+def authenticate(request):
+    return HttpResponse("Hello World")
