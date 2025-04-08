@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.contrib.auth import logout
 from Users.models import Profiles, SupabaseUser
 
 
@@ -38,4 +39,8 @@ def authenticate(request):
             request.session['user'] = UUID
             return redirect("../../")
 
+    return redirect('../../user/login')
+
+def logoutUser(request):
+    logout(request)
     return redirect('../../user/login')
