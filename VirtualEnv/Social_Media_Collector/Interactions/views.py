@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from Users.models import Profiles, SupabaseUser
 
 
 # Create your views here.
@@ -25,4 +26,16 @@ def delete(request):
     return HttpResponse("Hello World")
 
 def authenticate(request):
-    return HttpResponse("Hello World")
+    inputUsername = request.GET['n']
+    inputPasswordHash = request.GET['pw']
+    profile = Profiles.objects.using('htl-schoolpix').filter(username = inputUsername).first()
+
+    if profile is not None:
+        UUID = str(profile.id)
+        user = SupabaseUser.objects.using('htl-schoolpix').filter(id = UUID).first()
+        passwordHash = user.encrypted_password
+        if inputPasswordHash == passwordHash:
+            request.session['user'] = UUID
+            return redirect("../../")
+
+    return redirect('../../user/login')

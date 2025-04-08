@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Users',
+    'Posts',
+    'Interactions'
 ]
 
 MIDDLEWARE = [
@@ -80,7 +83,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     },
 
-    'htl-schoolpix': dj_database_url.config(default='postgresql://postgres.irqzcbxvwkenzjyruslr:HTLSchoolpixMadein2025!@aws-0-us-east-2.pooler.supabase.com:5432/postgres')
+    'htl-schoolpix': dj_database_url.config(default='postgresql://postgres.irqzcbxvwkenzjyruslr:HTLSchoolpixMadein2025!@aws-0-us-east-2.pooler.supabase.com:5432/postgres',)
 }
 
 
