@@ -20,6 +20,7 @@ class Classes(models.Model):
         db_table = 'classes'
         unique_together = (('name', 'department'),)
 
+
 class Departments(models.Model):
     id = models.UUIDField(primary_key=True)
     name = models.TextField(unique=True)
@@ -37,6 +38,7 @@ class Profiles(models.Model):
     department = models.ForeignKey(Departments, models.DO_NOTHING, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    class_field = models.ForeignKey(Classes, models.DO_NOTHING, db_column='class_id', blank=True, null=True)  # Field renamed because it was a Python reserved word.
 
     class Meta:
         managed = False

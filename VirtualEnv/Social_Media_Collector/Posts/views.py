@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
+from Users.models import Profiles
+from .models import Images
 
-# Create your views here.
 def feed(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
@@ -16,9 +17,24 @@ def upload(request):
 def viewPost(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
-    return HttpResponse("Hello World")
+    
+    if 'id' in request.GET:
+        postId = request.GET['id']
+        post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
+        if post is not None:
+            #Delete logic
+            return HttpResponse("Viewing post " + postId)
+        
+    return HttpResponse("Post does not exist")
 
 def manageReportedPost(request):
-    if request.session.get('isAdmin', "False") is "False":
+    UUID = request.session.get('user', None)
+    if UUID is None:
+        return redirect('../../user/login')
+    
+    user = Profiles.objects.using('htl-schoolpix').filter(id = str(UUID)).first()
+
+    if user.role is not "admin":
         return HttpResponseForbidden()
-    return HttpResponse("Hello World")
+    
+    return HttpResponse("Report Page")
