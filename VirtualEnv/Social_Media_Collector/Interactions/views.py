@@ -39,22 +39,24 @@ def report(request):
         postId = request.GET['id']
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
-            #Report logic
+            post.is_reported = True
             return HttpResponse("Success")
 
     return HttpResponse("Failed")
 
 def delete(request):
-    if request.session.get('user', None) is None:
+    UUID = request.session.get('user', None)
+    if UUID is None:
         return redirect('../../user/login')
     
     if 'id' in request.GET:
         postId = request.GET['id']
-        post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
+        post = Images.objects.using('htl-schoolpix').filter(id = postId).first()
         if post is not None:
-            #Delete logic
-            
-            return HttpResponse("Success")
+            user = Profiles.objects.using('htl-schoolpix').filter(id = str(UUID)).first()
+            if user.role is 'admin' or user.id is post.uploader.id:
+                post.delete()
+                return HttpResponse("Success")
 
     return HttpResponse("Failed")
 
