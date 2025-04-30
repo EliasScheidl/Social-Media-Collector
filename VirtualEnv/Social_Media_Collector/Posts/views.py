@@ -22,7 +22,7 @@ def viewPost(request):
         postId = request.GET['id']
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
-            #Delete logic
+            #Viewing logic
             return HttpResponse("Viewing post " + postId)
         
     return HttpResponse("Post does not exist")

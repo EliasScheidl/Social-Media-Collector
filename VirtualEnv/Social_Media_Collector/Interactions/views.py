@@ -4,30 +4,41 @@ from django.shortcuts import redirect
 from django.contrib.auth import logout
 from Users.models import Profiles, SupabaseUser
 from Posts.models import Images
+from .models import UserInteractions
 
 def like(request):
-    if request.session.get('user', None) is None:
+    UUID = request.session.get('user', None)
+    if UUID is None:
         return redirect('../../user/login')
     
     if 'id' in request.GET:
         postId = request.GET['id']
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
-            #Like logic
-            return HttpResponse("Success")
+            interaction = UserInteractions.objects.using('htl-schoolpix').filter(image_id = postId, user_id = UUID).first()
+            if interaction is None or interaction.interaction_type != 'like':
+                if interaction is not None and interaction.interaction_type == 'dislike':
+                    interaction.delete()
+                UserInteractions.objects.using('htl-schoolpix').create(image_id = postId, user_id = UUID, interaction_type = 'like')
+                return HttpResponse("Success")
 
     return HttpResponse("Failed")
 
 def dislike(request):
-    if request.session.get('user', None) is None:
+    UUID = request.session.get('user', None)
+    if UUID is None:
         return redirect('../../user/login')
     
     if 'id' in request.GET:
         postId = request.GET['id']
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
-            #Dislike logic
-            return HttpResponse("Success")
+            interaction = UserInteractions.objects.using('htl-schoolpix').filter(image_id = postId, user_id = UUID).first()
+            if interaction is None or interaction.interaction_type != 'dislike':
+                if interaction is not None and interaction.interaction_type == 'like':
+                    interaction.delete()
+                UserInteractions.objects.using('htl-schoolpix').create(image_id = postId, user_id = UUID, interaction_type = 'dislike')
+                return HttpResponse("Success")
 
     return HttpResponse("Failed")
 
@@ -54,7 +65,7 @@ def delete(request):
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first()
         if post is not None:
             user = Profiles.objects.using('htl-schoolpix').filter(id = str(UUID)).first()
-            if user.role is 'admin' or user.id is post.uploader.id:
+            if user.role == 'admin' or user.id == post.uploader.id:
                 post.delete()
                 return HttpResponse("Success")
 
@@ -79,3 +90,14 @@ def authenticate(request):
 def logoutUser(request):
     logout(request)
     return redirect('../../user/login')
+
+def post(request):
+    UUID = request.session.get('user', None)
+    if UUID is None:
+        return redirect('../../user/login')
+    
+    user = SupabaseUser.objects.using('htl-schoolpix').filter(id = UUID).first()
+
+
+
+    return HttpResponse("Failed")
