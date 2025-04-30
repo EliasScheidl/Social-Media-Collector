@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 from Users.models import Profiles, SupabaseUser
-from Posts.models import Images
+from Posts.models import Images, Classes, Departments
 from .models import UserInteractions
+from django.core.files.storage import FileSystemStorage
 
 def like(request):
     UUID = request.session.get('user', None)
@@ -98,6 +99,15 @@ def post(request):
     
     user = SupabaseUser.objects.using('htl-schoolpix').filter(id = UUID).first()
 
+    if request.method == 'POST' and request.FILES.get('image') and 'cap' in request.GET and 'dept' in request.GET and 'class' in request.GET:
+        sclass = Classes.objects.using('htl-schoolpix').filter(name=request.GET['class']).first()
+        dept = Departments.objects.using('htl-schoolpix').filter(name=request.GET['dept']).first()
+
+        post = Images.objects.create(uploader_id = user.id, caption = request.GET['cap'], department_id = dept.id, class_id = sclass.id)
+        post.storage_path = 'img_' + post.id
+        image = request.FILES['image']
+        FileSystemStorage().save(post.storage_path, image)
+        return HttpResponse("Success")
 
 
     return HttpResponse("Failed")
