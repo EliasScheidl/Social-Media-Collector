@@ -6,6 +6,9 @@ from Users.models import Profiles, SupabaseUser
 from Posts.models import Images, Classes, Departments
 from .models import UserInteractions
 from django.core.files.storage import FileSystemStorage
+from ldap3 import Server, Connection, ALL, SIMPLE
+from ldap3.core.exceptions import LDAPException
+#from django.views.decorators.csrf import csrf_exempt
 
 def like(request):
     UUID = request.session.get('user', None)
@@ -74,17 +77,21 @@ def delete(request):
 
 def authenticate(request):
     if 'n' in request.GET and 'pw' in request.GET:
+        
         inputUsername = request.GET['n']
-        inputPasswordHash = request.GET['pw']
-        profile = Profiles.objects.using('htl-schoolpix').filter(username = inputUsername).first()
+        inputPassword = request.GET['pw']
 
-        if profile is not None:
+        if authenticate_ldap(inputUsername, inputPassword):
+            profile = Profiles.objects.using('htl-schoolpix').filter(username = inputUsername).first()
+
+            if profile is None:
+                profile = Profiles.objects.using('htl-schoolpix').create(username = inputUsername, role="user")
+                print("created new profile for " + inputUsername)
+
             UUID = str(profile.id)
-            user = SupabaseUser.objects.using('htl-schoolpix').filter(id = UUID).first()
-            passwordHash = user.encrypted_password
-            if inputPasswordHash == passwordHash:
-                request.session['user'] = UUID
-                return redirect("../../")
+            request.session['user'] = UUID
+            return redirect("../../")
+                
 
     return redirect('../../user/login')
 
@@ -92,22 +99,38 @@ def logoutUser(request):
     logout(request)
     return redirect('../../user/login')
 
+#@csrf_exempt
 def post(request):
     UUID = request.session.get('user', None)
     if UUID is None:
         return redirect('../../user/login')
     
-    user = SupabaseUser.objects.using('htl-schoolpix').filter(id = UUID).first()
+    user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
 
     if request.method == 'POST' and request.FILES.get('image') and 'cap' in request.GET and 'dept' in request.GET and 'class' in request.GET:
         sclass = Classes.objects.using('htl-schoolpix').filter(name=request.GET['class']).first()
         dept = Departments.objects.using('htl-schoolpix').filter(name=request.GET['dept']).first()
 
-        post = Images.objects.create(uploader_id = user.id, caption = request.GET['cap'], department_id = dept.id, class_id = sclass.id)
+        post = Images.objects.using('htl-schoolpix').create(uploader_id = user.id, caption = request.GET['cap'], department_id = dept.id, class_id = sclass.id)
         post.storage_path = 'img_' + post.id
         image = request.FILES['image']
         FileSystemStorage().save(post.storage_path, image)
         return HttpResponse("Success")
 
+    return HttpResponse("Failed") 
 
-    return HttpResponse("Failed")
+def authenticate_ldap(username, password):
+    LDAP_SERVER = 'ldaps://ldaps.htlwy.at'
+    BASE_DN = 'ou=users,dc=schule,dc=local'
+
+    user_dn = f'uid={username},{BASE_DN}'
+    server = Server(LDAP_SERVER, port=636, use_ssl=True, get_info=ALL)
+
+    try:
+        conn = Connection(server, user=user_dn, password=password, authentication=SIMPLE, auto_bind=True)
+        print("Authenticated successfully.")
+        conn.unbind()
+        return True
+    except LDAPException as e:
+        print(f"Authentication failed: {e}")
+        return False

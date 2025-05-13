@@ -38,3 +38,5 @@ def manageReportedPost(request):
         return HttpResponseForbidden()
     
     return HttpResponse("Report Page")
+
+
