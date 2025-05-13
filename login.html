@@ -11,13 +11,13 @@
     <div class="container-fluid d-flex justify-content-center align-items-center vh-100">
         <div class="login-container text-center p-4">
             <div class="logo mb-3">
-                <img src="HTL_Schoolpix.png" alt="HTL Schoolpix Logo">
+            <img src="HTL_Schoolpix.png" alt="HTL Schoolpix Logo">
             </div>
             <h2 class="fw-bold">Login</h2>
-            <form action="" method="POST" id="loginForm"></form>
-                <input type="text" id="username" name="n" class="form-control mb-2" placeholder="Benutzername oder E-Mail Adresse" required>
-                <input type="password" id="password" name="pw" class="form-control mb-3" placeholder="Passwort" required>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+            <form action="/interact/auth" method="POST" id="loginForm"></form>
+            <input type="text" id="username" name="n" class="form-control mb-2" placeholder="Benutzername oder E-Mail Adresse" required>
+            <input type="password" id="password" name="pw" class="form-control mb-3" placeholder="Passwort" required>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
             <p class="help-text mt-3">Bei Problemen beim Anmelden wenden Sie sich an den Administrator</p>
         </div>
