@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = "interact"
+
 urlpatterns = [
     path('like/', views.like, name='like'),
     path('dislike/', views.dislike, name='dislike'),

@@ -8,7 +8,7 @@ from .models import UserInteractions
 from django.core.files.storage import FileSystemStorage
 from ldap3 import Server, Connection, ALL, SIMPLE
 from ldap3.core.exceptions import LDAPException
-#from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 
 def like(request):
     UUID = request.session.get('user', None)
@@ -99,7 +99,7 @@ def logoutUser(request):
     logout(request)
     return redirect('../../user/login')
 
-#@csrf_exempt
+@csrf_exempt
 def post(request):
     UUID = request.session.get('user', None)
     if UUID is None:
