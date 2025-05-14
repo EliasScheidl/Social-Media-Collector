@@ -14,10 +14,11 @@
             <img src="HTL_Schoolpix.png" alt="HTL Schoolpix Logo">
             </div>
             <h2 class="fw-bold">Login</h2>
-            <form action="/interact/auth" method="POST" id="loginForm"></form>
+            <form action="/interact/auth" method="POST" id="loginForm">
             <input type="text" id="username" name="n" class="form-control mb-2" placeholder="Benutzername oder E-Mail Adresse" required>
             <input type="password" id="password" name="pw" class="form-control mb-3" placeholder="Passwort" required>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <input type="submit" class="btn btn-primary w-100" value="Login">
+            <div id="loginError" class="alert alert-danger mt-3 d-none" role="alert"></div>
             </form>
             <p class="help-text mt-3">Bei Problemen beim Anmelden wenden Sie sich an den Administrator</p>
         </div>
