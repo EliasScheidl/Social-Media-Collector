@@ -9,6 +9,7 @@ from django.core.files.storage import FileSystemStorage
 from ldap3 import Server, Connection, ALL, SIMPLE
 from ldap3.core.exceptions import LDAPException
 from django.views.decorators.csrf import csrf_exempt
+from django.templatetags.static import static
 
 def like(request):
     UUID = request.session.get('user', None)
@@ -107,13 +108,13 @@ def post(request):
     
     user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
 
-    if request.method == 'POST' and request.FILES.get('image') and 'cap' in request.GET and 'dept' in request.GET and 'class' in request.GET:
-        sclass = Classes.objects.using('htl-schoolpix').filter(name=request.GET['class']).first()
-        dept = Departments.objects.using('htl-schoolpix').filter(name=request.GET['dept']).first()
 
-        post = Images.objects.using('htl-schoolpix').create(uploader_id = user.id, caption = request.GET['cap'], department_id = dept.id, class_id = sclass.id)
-        post.storage_path = 'img_' + post.id
-        image = request.FILES['image']
+    if request.method == 'POST' and request.FILES.get('file') is not None and request.POST.get('description') is not None and request.POST.get('department') is not None:
+        dept = Departments.objects.using('htl-schoolpix').filter(name=request.POST.get('department')).first()
+
+        post = Images.objects.using('htl-schoolpix').create(uploader_id = user.id, caption = request.POST.get('description'), department_id = dept.id)
+        post.storage_path = 'uploads/img_' + str(post.id)
+        image = request.FILES.get('file')
         FileSystemStorage().save(post.storage_path, image)
         return HttpResponse("Success")
 

@@ -16,7 +16,6 @@ def account(request):
     
     user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
     posts = Images.objects.using('htl-schoolpix').filter(uploader_id = UUID)
-    print(posts.count())
     
     rows = [[None for _ in range(3)] for _ in range(math.ceil(posts.count() / 3))]
 

@@ -7,12 +7,12 @@ from .models import Images
 def feed(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
-    return HttpResponse("Hello World")
+    return render(request, "home.html")
 
 def upload(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
-    return HttpResponse("Hello World")
+    return render(request, "upload.html")
 
 def viewPost(request):
     if request.session.get('user', None) is None:
