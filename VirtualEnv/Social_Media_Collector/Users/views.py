@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.template import loader
 from .models import Profiles
 from Posts.models import Images
+from django.conf import settings
 import math
 
 def login(request):
@@ -16,12 +17,16 @@ def account(request):
     
     user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
     posts = Images.objects.using('htl-schoolpix').filter(uploader_id = UUID)
-    
-    rows = [[None for _ in range(3)] for _ in range(math.ceil(posts.count() / 3))]
 
+    rows = [[None for _ in range(3)] for _ in range(math.ceil(posts.count() / 3))]
+    postsleft = posts.count()
     for i in range(math.ceil(posts.count() / 3)):
-        for j in range(posts.count() % ((i+1) * 3)):
+        n=3
+        if postsleft <3:
+            n = postsleft
+        postsleft -= 3
+
+        for j in range(n):
             rows[i][j] = posts[i * 3 + j]
 
-    print(rows)
-    return render(request, "account.html", {'Name': user.username, "Email": user.email, 'rows': rows})
+    return render(request, "account.html", {'Name': user.username, "Email": user.email, 'rows': rows, "MEDIA_URL": settings.MEDIA_URL})

@@ -72,6 +72,7 @@ def delete(request):
             user = Profiles.objects.using('htl-schoolpix').filter(id = str(UUID)).first()
             if user.role == 'admin' or user.id == post.uploader.id:
                 post.delete()
+                FileSystemStorage().delete(post.storage_path)
                 return HttpResponse("Success")
 
     return HttpResponse("Failed")
@@ -114,11 +115,12 @@ def post(request):
 
         post = Images.objects.using('htl-schoolpix').create(uploader_id = user.id, caption = request.POST.get('description'), department_id = dept.id)
         post.storage_path = 'uploads/img_' + str(post.id)
+        post.save()
         image = request.FILES.get('file')
         FileSystemStorage().save(post.storage_path, image)
-        return HttpResponse("Success")
+        return redirect("../../")
 
-    return HttpResponse("Failed") 
+    return HttpResponse("Posting failed") 
 
 def authenticate_ldap(username, password):
     LDAP_SERVER = 'ldaps://ldaps.htlwy.at'
