@@ -32,16 +32,19 @@
 
     <div class="mt-4 px-2">
       <h6>Verlauf</h6>
-      {% for row in rows %}
-      <div class="row g-2 mt-2">
-        {% for post in row%}
-          {% if post != None%}
-          <div class="col-4">
-            <a href="{% url 'posts:view' %}?id={{post.id}}"><img src="{{ MEDIA_URL }}{{post.storage_path}}" height="400px"></a>
-          </div>
-          {% endif %}
+      {% for date in dates %}
+        <h6 class="fw-bold mt-3">{{date.0.0.created_at.date}}</h6>
+        {% for row in date %}
+        <div class="row g-2 mt-2">
+          {% for post in row%}
+            {% if post != None%}
+            <div class="col-4">
+              <a href="{% url 'posts:view' %}?id={{post.id}}"><img src="{{ MEDIA_URL }}{{post.storage_path}}" height="400px"></a>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
         {% endfor %}
-      </div>
       {% endfor %}
     </div>
   </div>

@@ -5,7 +5,7 @@ from django.template import loader
 from .models import Profiles
 from Posts.models import Images
 from django.conf import settings
-import math
+from Posts.views import getPostDates
 
 def login(request):
     return render(request, "login.html")
@@ -16,17 +16,11 @@ def account(request):
         return redirect('../../user/login')
     
     user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
-    posts = Images.objects.using('htl-schoolpix').filter(uploader_id = UUID)
+    posts = Images.objects.using('htl-schoolpix').filter(uploader_id = UUID).order_by('created_at')
+    
+    postDates = getPostDates(posts)
 
-    rows = [[None for _ in range(3)] for _ in range(math.ceil(posts.count() / 3))]
-    postsleft = posts.count()
-    for i in range(math.ceil(posts.count() / 3)):
-        n=3
-        if postsleft <3:
-            n = postsleft
-        postsleft -= 3
+    print(postDates)
 
-        for j in range(n):
-            rows[i][j] = posts[i * 3 + j]
+    return render(request, "account.html", {'Name': user.username, "Email": user.email, 'dates': postDates, "MEDIA_URL": settings.MEDIA_URL})
 
-    return render(request, "account.html", {'Name': user.username, "Email": user.email, 'rows': rows, "MEDIA_URL": settings.MEDIA_URL})

@@ -4,11 +4,17 @@ from django.shortcuts import redirect
 from Users.models import Profiles
 from .models import Images
 from django.conf import settings
+import math
 
 def feed(request):
     if request.session.get('user', None) is None:
         return redirect('../../user/login')
-    return render(request, "home.html")
+    
+    posts = Images.objects.using('htl-schoolpix').order_by('created_at')
+    
+    postDates = getPostDates(posts)
+
+    return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL})
 
 def upload(request):
     if request.session.get('user', None) is None:
@@ -43,6 +49,28 @@ def manageReportedPost(request):
     if user.role is not "admin":
         return HttpResponseForbidden()
     
-    return HttpResponse("Report Page")
+    posts = Images.objects.using('htl-schoolpix').filter(is_reported = True).order_by('created_at')
+    
+    postDates = getPostDates(posts)
 
+    return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL})
+
+def getPostDates(posts):
+    dates = list(set([post.created_at.date for post in posts]))
+    postDates = [None for _ in range(len(dates))]
+
+    for dateIndex in range(len(dates)):
+        postsAtDate = [post for post in posts if post.created_at.date == dates[dateIndex]]
+        rows = [[None for _ in range(3)] for _ in range(math.ceil(len(postsAtDate) / 3))]
+        postsleft = len(postsAtDate)
+        for i in range(math.ceil(len(postsAtDate) / 3)):
+            n=3
+            if postsleft <3:
+                n = postsleft
+            postsleft -= 3
+
+            for j in range(n):
+                rows[i][j] = postsAtDate[i * 3 + j]
+        postDates[dateIndex] = rows
+    return postDates
 
