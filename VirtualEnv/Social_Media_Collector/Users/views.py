@@ -22,5 +22,5 @@ def account(request):
 
     print(postDates)
 
-    return render(request, "account.html", {'Name': user.username, "Email": user.email, 'dates': postDates, "MEDIA_URL": settings.MEDIA_URL})
+    return render(request, "account.html", {'Name': user.username, "Email": user.email, 'dates': postDates, "MEDIA_URL": settings.MEDIA_URL, "isAdmin": user.role == 'admin'})
 

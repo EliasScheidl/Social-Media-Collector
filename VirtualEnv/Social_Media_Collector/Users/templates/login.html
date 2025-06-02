@@ -14,11 +14,10 @@
             <div class="logo mb-3">
             <img src="{% static 'image/HTL_Schoolpix.png' %}" alt="HTL Schoolpix Logo">
             </div>
-            <h2 class="fw-bold">Login</h2>
             <form action="{% url 'interact:authenticate' %}" method="GET" id="loginForm">
-                <input type="text" id="username" name="n" class="form-control mb-2" placeholder="Benutzername oder E-Mail Adresse" required>
+                <input type="text" id="username" name="n" class="form-control mb-2" placeholder="Benutzername" required>
                 <input type="password" id="password" name="pw" class="form-control mb-3" placeholder="Passwort" required>
-                <input type="submit" class="btn btn-primary w-100">
+                <input type="submit" value="Login" class="btn btn-primary w-100">
             </form>
             <p class="help-text mt-3">Bei Problemen beim Anmelden wenden Sie sich an den Administrator</p>
         </div>

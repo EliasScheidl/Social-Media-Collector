@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
               "1AHWIM", "2AHWIM", "3AHWIM", "4AHWIM", "5AHWIM",
               "1BHWIM", "2BHWIM", "3BHWIM", "4BHWIM", "5BHWIM"
             ],
-            MBA: [
+            AUT: [
               "1AHMBA", "2AHMBA", "3AHMBA", "4AHMBA", "5AHMBA",
               "1BHMBA", "2BHMBA", "3BHMBA", "4BHMBA", "5BHMBA"
             ],

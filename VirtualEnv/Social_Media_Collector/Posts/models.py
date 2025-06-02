@@ -7,6 +7,7 @@ class Images(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     uploader = models.ForeignKey(Profiles, models.DO_NOTHING, blank=True, null=True)
     department = models.ForeignKey(Departments, models.DO_NOTHING, blank=True, null=True)
+    class_ref = models.ForeignKey(Classes, models.DO_NOTHING, blank=True, null=True, db_column='class_id')
     caption = models.TextField()
     storage_path = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)

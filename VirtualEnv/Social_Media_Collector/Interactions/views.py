@@ -21,11 +21,13 @@ def like(request):
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
             interaction = UserInteractions.objects.using('htl-schoolpix').filter(image_id = postId, user_id = UUID).first()
-            if interaction is None or interaction.interaction_type != 'like':
+            if interaction is not None and interaction.interaction_type == 'like':
+                UserInteractions.objects.using('htl-schoolpix').filter(image_id = postId, user_id = UUID).first().delete()
+            else:
                 if interaction is not None and interaction.interaction_type == 'dislike':
                     interaction.delete()
                 UserInteractions.objects.using('htl-schoolpix').create(image_id = postId, user_id = UUID, interaction_type = 'like')
-                return HttpResponse("Success")
+            return redirect('../../view/?id=' + str(post.id))
 
     return HttpResponse("Failed")
 
@@ -39,11 +41,13 @@ def dislike(request):
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
             interaction = UserInteractions.objects.using('htl-schoolpix').filter(image_id = postId, user_id = UUID).first()
-            if interaction is None or interaction.interaction_type != 'dislike':
+            if interaction is not None and interaction.interaction_type == 'dislike':
+                UserInteractions.objects.using('htl-schoolpix').filter(image_id = postId, user_id = UUID).first().delete()
+            else:
                 if interaction is not None and interaction.interaction_type == 'like':
                     interaction.delete()
                 UserInteractions.objects.using('htl-schoolpix').create(image_id = postId, user_id = UUID, interaction_type = 'dislike')
-                return HttpResponse("Success")
+            return redirect('../../view/?id=' + str(post.id))
 
     return HttpResponse("Failed")
 
@@ -56,7 +60,8 @@ def report(request):
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
             post.is_reported = True
-            return HttpResponse("Success")
+            post.save()
+            return redirect('../../view/?id=' + str(post.id))
 
     return HttpResponse("Failed")
 
@@ -73,7 +78,7 @@ def delete(request):
             if user.role == 'admin' or user.id == post.uploader.id:
                 post.delete()
                 FileSystemStorage().delete(post.storage_path)
-                return HttpResponse("Success")
+                return redirect('../../')
 
     return HttpResponse("Failed")
 
@@ -109,11 +114,12 @@ def post(request):
     
     user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
 
-
-    if request.method == 'POST' and request.FILES.get('file') is not None and request.POST.get('description') is not None and request.POST.get('department') is not None:
+    if request.method == 'POST' and request.FILES.get('file') is not None and request.POST.get('description') is not None and request.POST.get('department') is not None and request.POST.get('class') is not None:
         dept = Departments.objects.using('htl-schoolpix').filter(name=request.POST.get('department')).first()
+        print(request.POST.get('class').lower())
+        sclass = Classes.objects.using('htl-schoolpix').filter(name=request.POST.get('class').lower()).first()
 
-        post = Images.objects.using('htl-schoolpix').create(uploader_id = user.id, caption = request.POST.get('description'), department_id = dept.id)
+        post = Images.objects.using('htl-schoolpix').create(uploader_id = user.id, caption = request.POST.get('description'), department_id = dept.id, class_ref = sclass)
         post.storage_path = 'uploads/img_' + str(post.id)
         post.save()
         image = request.FILES.get('file')

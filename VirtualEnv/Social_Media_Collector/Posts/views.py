@@ -1,20 +1,23 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
-from Users.models import Profiles
+from Users.models import Profiles, Departments, Classes
 from .models import Images
 from django.conf import settings
 import math
 
 def feed(request):
-    if request.session.get('user', None) is None:
+    UUID = request.session.get('user', None)
+    if UUID is None:
         return redirect('../../user/login')
+    
+    user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
     
     posts = Images.objects.using('htl-schoolpix').order_by('created_at')
     
     postDates = getPostDates(posts)
 
-    return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL})
+    return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL, "isAdmin": user.role == 'admin'})
 
 def upload(request):
     if request.session.get('user', None) is None:
@@ -31,8 +34,10 @@ def viewPost(request):
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
             user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
+            sclass = Classes.objects.using('htl-schoolpix').filter(id = post.class_ref.id).first()
+            dept = Departments.objects.using('htl-schoolpix').filter(id = post.department.id).first()
             canDelete = user.role == "admin" or post.uploader.id == user.id
-            return render(request, "photoview.html", {'post': post, "MEDIA_URL": settings.MEDIA_URL, "canDelete": canDelete})
+            return render(request, "photoview.html", {'post': post, "MEDIA_URL": settings.MEDIA_URL, "canDelete": canDelete, "class": sclass.name, "department": dept.name})
         
         return HttpResponse("Post does not exist")
         
@@ -46,14 +51,14 @@ def manageReportedPost(request):
     
     user = Profiles.objects.using('htl-schoolpix').filter(id = str(UUID)).first()
 
-    if user.role is not "admin":
+    if user.role != "admin":
         return HttpResponseForbidden()
     
     posts = Images.objects.using('htl-schoolpix').filter(is_reported = True).order_by('created_at')
     
     postDates = getPostDates(posts)
 
-    return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL})
+    return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL, "isAdmin": user.role == 'admin'})
 
 def getPostDates(posts):
     dates = list(set([post.created_at.date for post in posts]))
@@ -73,4 +78,3 @@ def getPostDates(posts):
                 rows[i][j] = postsAtDate[i * 3 + j]
         postDates[dateIndex] = rows
     return postDates
-
