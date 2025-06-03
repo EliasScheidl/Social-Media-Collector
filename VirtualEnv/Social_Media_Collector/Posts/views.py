@@ -15,8 +15,11 @@ def feed(request):
     
     posts = Images.objects.using('htl-schoolpix').order_by('created_at')
     
+    if 'filter' in request.GET:
+        filter = request.GET['id']
+        posts = posts.filter(caption__icontains=filter)
     postDates = getPostDates(posts)
-
+    
     return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL, "isAdmin": user.role == 'admin'})
 
 def upload(request):
@@ -61,11 +64,12 @@ def manageReportedPost(request):
     return render(request, "home.html", {'dates': postDates, "MEDIA_URL": settings.MEDIA_URL, "isAdmin": user.role == 'admin'})
 
 def getPostDates(posts):
-    dates = list(set([post.created_at.date for post in posts]))
+    dates = list(set([post.created_at.date() for post in posts]))
     postDates = [None for _ in range(len(dates))]
 
     for dateIndex in range(len(dates)):
-        postsAtDate = [post for post in posts if post.created_at.date == dates[dateIndex]]
+        postsAtDate = [post for post in posts if post.created_at.date() == dates[dateIndex]]
+
         rows = [[None for _ in range(3)] for _ in range(math.ceil(len(postsAtDate) / 3))]
         postsleft = len(postsAtDate)
         for i in range(math.ceil(len(postsAtDate) / 3)):

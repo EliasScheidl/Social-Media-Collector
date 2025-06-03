@@ -26,7 +26,11 @@
           {% for post in row%}
             {% if post != None%}
             <div class="col-4">
-              <a href="{% url 'posts:view' %}?id={{post.id}}"><img src="{{ MEDIA_URL }}{{post.storage_path}}" height="400px"></a>
+              <a href="{% url 'posts:view' %}?id={{post.id}}">
+                <div class="image-container">
+                  <img src="{{ MEDIA_URL }}{{post.storage_path}}" style="max-width: 90%;">
+                </div>
+              </a>
             </div>
             {% endif %}
           {% endfor %}
