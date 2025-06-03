@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bildansicht</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/photoview.css' %}">
+<script src="{% static 'js/photoview.js' %}"></script>
+</head>
+<body>
+ 
+  <div class="header">
+      <a href="{% url 'posts:feed' %}"><button class="btn text-dark fs-2">⨉</button></a>
+          <div class="title">Bildansicht</div>
+  </div>
+
+  
+  <div class="image-container">
+    <h5>Abteilung: {{department}} | Klasse: {{class}}</h5>
+    <h5>Beschreibung: "{{post.caption}}"</h5>
+    <img src="{{ MEDIA_URL }}{{post.storage_path}}" alt="Bildvorschau">
+  </div>
+
+  
+ <div class="bottom-nav d-flex justify-content-around py-2">
+    <a href="{% url 'interact:like' %}?id={{post.id}}" title="Like" style="text-decoration: none;"><span>{{post.likes_count}}</span><i class="bi bi-hand-thumbs-up-fill"></i></a>
+    <a href="{% url 'interact:dislike' %}?id={{post.id}}" title="Dislike" style="text-decoration: none;"><span>{{post.dislikes_count}}</span><i class="bi bi-hand-thumbs-down-fill"></i></a>
+    <a href="{% url 'interact:report' %}?id={{post.id}}" title="Melden"><i class="bi bi-flag-fill"></i></a>
+    {% if canDelete == True %}
+      <a href="{% url 'interact:delete' %}?id={{post.id}}" title="Löschen"><i class="bi bi-trash-fill"></i></a>
+    {% endif %}
+  </div>
+
+</body>
+</html>
