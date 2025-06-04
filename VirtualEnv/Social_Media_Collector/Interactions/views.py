@@ -52,16 +52,24 @@ def dislike(request):
     return HttpResponse("Failed")
 
 def report(request):
-    if request.session.get('user', None) is None:
+    UUID = request.session.get('user', None)
+    if UUID is None:
         return redirect('../../user/login')
     
     if 'id' in request.GET:
         postId = request.GET['id']
         post = Images.objects.using('htl-schoolpix').filter(id = postId).first() 
         if post is not None:
-            post.is_reported = True
-            post.save()
+            if post.is_reported:
+                user = Profiles.objects.using('htl-schoolpix').filter(id = UUID).first()
+                if user.role == 'admin':
+                    post.is_reported = False
+                    post.save()
+            else:
+                post.is_reported = True
+                post.save()
             return redirect('../../view/?id=' + str(post.id))
+    
 
     return HttpResponse("Failed")
 
